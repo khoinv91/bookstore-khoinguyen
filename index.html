@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Mario Tự Chế</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-wrap">
+    <canvas id="gameCanvas" width="960" height="540"></canvas>
+
+    <div id="screen-menu" class="screen">
+      <h1>MARIO TỰ CHẾ</h1>
+      <button data-action="goto-charselect-1p">Chơi 1 người</button>
+      <button data-action="goto-charselect-2p">Chơi 2 người (chung bàn phím)</button>
+      <button data-action="goto-charselect-custom" id="btn-play-custom">Chơi màn tự tạo</button>
+      <button data-action="goto-editor">Trình tạo màn chơi</button>
+      <button data-action="goto-controls">Đổi phím điều khiển</button>
+      <button data-action="goto-difficulty">Độ khó</button>
+    </div>
+
+    <div id="screen-charselect" class="screen hidden">
+      <h2>Chọn nhân vật</h2>
+      <div class="charselect-players">
+        <div class="charselect-col">
+          <h3>Người chơi 1</h3>
+          <div id="char-grid-p1" class="char-grid"></div>
+        </div>
+        <div class="charselect-col hidden" id="charselect-p2-col">
+          <h3>Người chơi 2</h3>
+          <div id="char-grid-p2" class="char-grid"></div>
+        </div>
+      </div>
+      <button data-action="start-game">Bắt đầu</button>
+      <button data-action="back-to-menu">Về menu</button>
+    </div>
+
+    <div id="screen-controls" class="screen hidden">
+      <h2>Đổi phím điều khiển</h2>
+      <div class="controls-players">
+        <div class="controls-col">
+          <h3>Người chơi 1</h3>
+          <div class="control-row"><span>Trái</span><button class="rebind-btn" data-player="1" data-action-key="left"></button></div>
+          <div class="control-row"><span>Phải</span><button class="rebind-btn" data-player="1" data-action-key="right"></button></div>
+          <div class="control-row"><span>Nhảy / Bay</span><button class="rebind-btn" data-player="1" data-action-key="jump"></button></div>
+          <div class="control-row"><span>Xuống (vào ống khói)</span><button class="rebind-btn" data-player="1" data-action-key="down"></button></div>
+          <div class="control-row"><span>Bắn lửa</span><button class="rebind-btn" data-player="1" data-action-key="fire"></button></div>
+        </div>
+        <div class="controls-col">
+          <h3>Người chơi 2</h3>
+          <div class="control-row"><span>Trái</span><button class="rebind-btn" data-player="2" data-action-key="left"></button></div>
+          <div class="control-row"><span>Phải</span><button class="rebind-btn" data-player="2" data-action-key="right"></button></div>
+          <div class="control-row"><span>Nhảy / Bay</span><button class="rebind-btn" data-player="2" data-action-key="jump"></button></div>
+          <div class="control-row"><span>Xuống (vào ống khói)</span><button class="rebind-btn" data-player="2" data-action-key="down"></button></div>
+          <div class="control-row"><span>Bắn lửa</span><button class="rebind-btn" data-player="2" data-action-key="fire"></button></div>
+        </div>
+      </div>
+      <p id="rebind-hint"></p>
+      <button data-action="back-to-menu">Lưu &amp; Quay lại</button>
+    </div>
+
+    <div id="screen-difficulty" class="screen hidden">
+      <h2>Độ khó</h2>
+      <button class="diff-btn" data-diff="easy">Dễ (nhảy cao, bay nhẹ, 5 mạng)</button>
+      <button class="diff-btn" data-diff="normal">Thường (3 mạng)</button>
+      <button class="diff-btn" data-diff="hard">Khó (di chuyển nhanh, 2 mạng)</button>
+      <button data-action="back-to-menu">Quay lại</button>
+    </div>
+
+    <div id="screen-editor-toolbar" class="screen hidden">
+      <div class="toolbar">
+        <button class="tile-btn" data-tile="1">Đất</button>
+        <button class="tile-btn" data-tile="2">Khối nấm</button>
+        <button class="tile-btn" data-tile="4">Ống nước</button>
+        <button class="tile-btn" data-tile="9">Ống khói (sang/kết thúc màn)</button>
+        <button class="tile-btn" data-tile="5">Quái</button>
+        <button class="tile-btn" data-tile="10">Trùm cuối</button>
+        <button class="tile-btn" data-tile="11">Gai</button>
+        <button class="tile-btn" data-tile="12">Bệ di chuyển ngang</button>
+        <button class="tile-btn" data-tile="13">Bệ di chuyển dọc</button>
+        <button class="tile-btn" data-tile="7">Xu</button>
+        <button class="tile-btn" data-tile="8">Điểm xuất phát</button>
+        <button class="tile-btn" data-tile="6">Cờ đích</button>
+        <button class="tile-btn" data-tile="0">Xóa</button>
+        <button data-action="editor-scroll-left">◀ Cuộn trái</button>
+        <button data-action="editor-scroll-right">Cuộn phải ▶</button>
+        <button data-action="editor-save">Lưu màn chơi</button>
+        <button data-action="editor-play">Chơi thử</button>
+        <button data-action="back-to-menu">Về menu</button>
+      </div>
+    </div>
+
+    <div id="overlay" class="hidden">
+      <p id="overlay-text"></p>
+      <button id="restart-btn">Chơi lại</button>
+      <button id="menu-btn">Về menu</button>
+    </div>
+  </div>
+  <p id="hint"></p>
+  <script src="game.js"></script>
+</body>
+</html>

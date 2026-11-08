@@ -1,0 +1,363 @@
+<title>Mario Tự Chế</title>
+<style>
+* {
+  margin: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  background: #222;
+  min-height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  font-family: sans-serif;
+  color: #eee;
+}
+
+#page {
+  width: 100%;
+  max-width: 960px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+#game-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+  aspect-ratio: 960 / 540;
+}
+
+#gameCanvas {
+  background: #5c94fc;
+  border: 4px solid #444;
+  display: block;
+  image-rendering: pixelated;
+  width: 100%;
+  height: 100%;
+}
+
+.screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #1a1a2e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  overflow: auto;
+}
+
+.screen.hidden {
+  display: none;
+}
+
+.screen h1 {
+  color: #f2a541;
+  font-size: clamp(24px, 5vw, 40px);
+  margin-bottom: 20px;
+  letter-spacing: 4px;
+  text-align: center;
+}
+
+.screen h2 {
+  color: #f2a541;
+  margin-bottom: 10px;
+}
+
+.screen button {
+  font-size: 16px;
+  padding: 10px 22px;
+  cursor: pointer;
+  background: #444;
+  color: #eee;
+  border: 2px solid #888;
+  border-radius: 4px;
+  min-width: 260px;
+}
+
+.screen button:hover {
+  background: #666;
+}
+
+.screen button:focus-visible {
+  outline: 3px solid #f2a541;
+  outline-offset: 2px;
+}
+
+.screen button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.charselect-players {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.charselect-col h3 {
+  color: #f2a541;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.char-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.char-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px;
+  background: #333;
+  border: 2px solid #666;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 90px;
+}
+
+.char-card:hover {
+  border-color: #aaa;
+}
+
+.char-card.selected {
+  border-color: #f2a541;
+  background: #4a3a1a;
+}
+
+.char-card canvas {
+  image-rendering: pixelated;
+  background: #5c94fc;
+  width: 48px;
+  height: 64px;
+}
+
+.char-card .char-name {
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.char-card .char-skill {
+  font-size: 10px;
+  color: #ccc;
+  text-align: center;
+}
+
+.controls-players {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.controls-col h3 {
+  color: #f2a541;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.control-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 280px;
+  justify-content: space-between;
+}
+
+.rebind-btn {
+  min-width: 100px;
+}
+
+#rebind-hint {
+  min-height: 20px;
+  color: #f2a541;
+}
+
+#screen-editor-toolbar {
+  background: transparent;
+  align-items: flex-start;
+  justify-content: flex-start;
+  pointer-events: none;
+  padding: 8px;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 8px;
+  border-radius: 6px;
+  pointer-events: auto;
+}
+
+.toolbar button {
+  font-size: 13px;
+  padding: 6px 10px;
+  min-width: unset;
+}
+
+.tile-btn.selected,
+.diff-btn.selected {
+  background: #f2a541;
+  color: #222;
+}
+
+#overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+#overlay.hidden {
+  display: none;
+}
+
+#overlay-text {
+  font-size: clamp(20px, 4vw, 32px);
+  font-weight: bold;
+  text-align: center;
+  padding: 0 12px;
+}
+
+#overlay button {
+  font-size: 18px;
+  padding: 8px 20px;
+  cursor: pointer;
+}
+
+#hint {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #aaa;
+  text-align: center;
+  max-width: 960px;
+}
+</style>
+
+<div id="page">
+  <div id="game-wrap">
+    <canvas id="gameCanvas" width="960" height="540"></canvas>
+
+    <div id="screen-menu" class="screen">
+      <h1>MARIO TỰ CHẾ</h1>
+      <button data-action="goto-charselect-1p">Chơi 1 người</button>
+      <button data-action="goto-charselect-2p">Chơi 2 người (chung bàn phím)</button>
+      <button data-action="goto-charselect-custom" id="btn-play-custom">Chơi màn tự tạo</button>
+      <button data-action="goto-editor">Trình tạo màn chơi</button>
+      <button data-action="goto-controls">Đổi phím điều khiển</button>
+      <button data-action="goto-difficulty">Độ khó</button>
+    </div>
+
+    <div id="screen-charselect" class="screen hidden">
+      <h2>Chọn nhân vật</h2>
+      <div class="charselect-players">
+        <div class="charselect-col">
+          <h3>Người chơi 1</h3>
+          <div id="char-grid-p1" class="char-grid"></div>
+        </div>
+        <div class="charselect-col hidden" id="charselect-p2-col">
+          <h3>Người chơi 2</h3>
+          <div id="char-grid-p2" class="char-grid"></div>
+        </div>
+      </div>
+      <button data-action="start-game">Bắt đầu</button>
+      <button data-action="back-to-menu">Về menu</button>
+    </div>
+
+    <div id="screen-controls" class="screen hidden">
+      <h2>Đổi phím điều khiển</h2>
+      <div class="controls-players">
+        <div class="controls-col">
+          <h3>Người chơi 1</h3>
+          <div class="control-row"><span>Trái</span><button class="rebind-btn" data-player="1" data-action-key="left"></button></div>
+          <div class="control-row"><span>Phải</span><button class="rebind-btn" data-player="1" data-action-key="right"></button></div>
+          <div class="control-row"><span>Nhảy / Bay</span><button class="rebind-btn" data-player="1" data-action-key="jump"></button></div>
+          <div class="control-row"><span>Xuống (vào ống khói)</span><button class="rebind-btn" data-player="1" data-action-key="down"></button></div>
+          <div class="control-row"><span>Bắn lửa</span><button class="rebind-btn" data-player="1" data-action-key="fire"></button></div>
+        </div>
+        <div class="controls-col">
+          <h3>Người chơi 2</h3>
+          <div class="control-row"><span>Trái</span><button class="rebind-btn" data-player="2" data-action-key="left"></button></div>
+          <div class="control-row"><span>Phải</span><button class="rebind-btn" data-player="2" data-action-key="right"></button></div>
+          <div class="control-row"><span>Nhảy / Bay</span><button class="rebind-btn" data-player="2" data-action-key="jump"></button></div>
+          <div class="control-row"><span>Xuống (vào ống khói)</span><button class="rebind-btn" data-player="2" data-action-key="down"></button></div>
+          <div class="control-row"><span>Bắn lửa</span><button class="rebind-btn" data-player="2" data-action-key="fire"></button></div>
+        </div>
+      </div>
+      <p id="rebind-hint"></p>
+      <button data-action="back-to-menu">Lưu &amp; Quay lại</button>
+    </div>
+
+    <div id="screen-difficulty" class="screen hidden">
+      <h2>Độ khó</h2>
+      <button class="diff-btn" data-diff="easy">Dễ (nhảy cao, bay nhẹ, 5 mạng)</button>
+      <button class="diff-btn" data-diff="normal">Thường (3 mạng)</button>
+      <button class="diff-btn" data-diff="hard">Khó (di chuyển nhanh, 2 mạng)</button>
+      <button data-action="back-to-menu">Quay lại</button>
+    </div>
+
+    <div id="screen-editor-toolbar" class="screen hidden">
+      <div class="toolbar">
+        <button class="tile-btn" data-tile="1">Đất</button>
+        <button class="tile-btn" data-tile="2">Khối nấm</button>
+        <button class="tile-btn" data-tile="4">Ống nước</button>
+        <button class="tile-btn" data-tile="9">Ống khói (sang/kết thúc màn)</button>
+        <button class="tile-btn" data-tile="5">Quái</button>
+        <button class="tile-btn" data-tile="10">Trùm cuối</button>
+        <button class="tile-btn" data-tile="11">Gai</button>
+        <button class="tile-btn" data-tile="12">Bệ di chuyển ngang</button>
+        <button class="tile-btn" data-tile="13">Bệ di chuyển dọc</button>
+        <button class="tile-btn" data-tile="7">Xu</button>
+        <button class="tile-btn" data-tile="8">Điểm xuất phát</button>
+        <button class="tile-btn" data-tile="6">Cờ đích</button>
+        <button class="tile-btn" data-tile="0">Xóa</button>
+        <button data-action="editor-scroll-left">◀ Cuộn trái</button>
+        <button data-action="editor-scroll-right">Cuộn phải ▶</button>
+        <button data-action="editor-save">Lưu màn chơi</button>
+        <button data-action="editor-play">Chơi thử</button>
+        <button data-action="back-to-menu">Về menu</button>
+      </div>
+    </div>
+
+    <div id="overlay" class="hidden">
+      <p id="overlay-text"></p>
+      <button id="restart-btn">Chơi lại</button>
+      <button id="menu-btn">Về menu</button>
+    </div>
+  </div>
+  <p id="hint"></p>
+</div>
+
+<script src="game.js"></script>

@@ -504,6 +504,7 @@ function handlePlayerDeath(p) {
       gameState = "lost";
       restartBtn.textContent = "Chơi lại";
       showOverlay("Thua rồi! Điểm: " + score);
+      notifyRunEnded(false);
     }
   } else if (players.length === 1) {
     gameState = "lost";
@@ -541,6 +542,7 @@ function winRun() {
   gameState = "won";
   restartBtn.textContent = "Chơi lại";
   showOverlay("Chúc mừng, đã qua hết các màn! Điểm: " + score);
+  notifyRunEnded(true);
 }
 
 function updatePlayerPhysics(p) {
@@ -745,6 +747,13 @@ function updateCamera() {
   const avgY = alive.reduce((s, p) => s + p.y + p.height / 2, 0) / alive.length;
   camera.x = Math.max(0, Math.min(avgX - VIEW_WIDTH / 2, Math.max(0, WORLD_WIDTH - VIEW_WIDTH)));
   camera.y = Math.max(0, Math.min(avgY - VIEW_HEIGHT / 2, Math.max(0, WORLD_HEIGHT - VIEW_HEIGHT)));
+}
+
+// Báo cho leaderboard.js biết lượt chơi đã kết thúc để gửi điểm lên bảng xếp hạng
+function notifyRunEnded(won) {
+  if (typeof window.onRunEnded === "function") {
+    window.onRunEnded({ score, won, difficulty: difficultyKey, players: players.length });
+  }
 }
 
 function showOverlay(text) {

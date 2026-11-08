@@ -286,6 +286,7 @@ body {
   min-height: 1.2em;
 }
 .lb-tabs { display: flex; gap: 6px; }
+.screen .lb-tab { min-width: 0; width: 110px; padding: 8px 10px; }
 .lb-tab.selected { outline: 2px solid #f2a541; }
 #lb-list {
   width: 60%;

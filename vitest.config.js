@@ -14,6 +14,7 @@ export default defineConfig({
     }),
   ],
   test: {
+    include: ["test/**/*.test.js"],
     setupFiles: ["./test/apply-migrations.js"],
   },
 });

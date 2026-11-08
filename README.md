@@ -11,14 +11,15 @@ Mỗi lần push lên nhánh `main`, GitHub Actions tự **chạy test** rồi *
 | `src/index.js` | Worker: phục vụ game và API `/api/scores`, `/api/health` |
 | `src/scores.js` | Kiểm tra dữ liệu + truy vấn D1 |
 | `migrations/` | Cấu trúc bảng D1 |
-| `test/` | Test tự động (chạy trên runtime Workers thật, D1 giả lập) |
+| `test/` | Unit + integration test (runtime Workers thật, D1 giả lập) |
+| `e2e/` | Test đầu-cuối: mở game trên Chrome thật, bấm như người chơi |
 | `.github/workflows/ci-cd.yml` | Quy trình CI/CD |
 | `scripts/ensure-d1.mjs` | Tự tạo D1 nếu chưa có khi deploy |
 
 ## Quy trình CI/CD
 
-- **Pull request vào `main`** → chạy test + kiểm tra build.
-- **Push vào `main`** → test → tạo D1 (nếu chưa có) → chạy migrations → deploy → kiểm tra trang web sống.
+- **Pull request vào `main`** → chạy test + test E2E + kiểm tra build.
+- **Push vào `main`** → test + test E2E → tạo D1 (nếu chưa có) → chạy migrations → deploy → kiểm tra trang web sống.
 
 ## Thiết lập lần đầu (chỉ làm 1 lần)
 
@@ -37,7 +38,9 @@ Link game sẽ hiện ở tab Actions, dạng `https://mario-tu-che.<ten-ban>.wo
 
 ```bash
 npm install
-npm test                      # chạy test
+npm test                      # unit + integration test
+npx playwright install chromium
+npm run test:e2e              # test đầu-cuối trên trình duyệt
 npm run db:migrate:local      # tạo bảng D1 trên máy
 npm run dev                   # mở http://localhost:8787
 ```

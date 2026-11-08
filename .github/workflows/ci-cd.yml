@@ -95,6 +95,10 @@ jobs:
           ACCOUNT=$(printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | tr -d '[:space:]')
           echo "::add-mask::$TOKEN"
           echo "::add-mask::$ACCOUNT"
+          if ! [[ "$TOKEN" =~ ^[A-Za-z0-9_-]{30,}$ ]]; then
+            echo "::error::CLOUDFLARE_API_TOKEN không giống token Cloudflare (dài ${#TOKEN} ký tự, có ký tự lạ). Hãy tạo/roll token mới rồi dán lại."
+            exit 1
+          fi
           if ! [[ "$ACCOUNT" =~ ^[0-9a-f]{32}$ ]]; then
             echo "::error::CLOUDFLARE_ACCOUNT_ID không đúng định dạng (phải là 32 ký tự 0-9, a-f)"
             exit 1

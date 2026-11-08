@@ -133,10 +133,11 @@ jobs:
           URL: ${{ steps.deploy.outputs.deployment-url }}
         run: |
           echo "Kiểm tra $URL"
-          for i in 1 2 3 4 5; do
+          # Lần deploy đầu tiên, link workers.dev mới có thể mất 1-3 phút mới hoạt động
+          for i in $(seq 1 24); do
             if curl -fsS "$URL/api/health" | grep -q '"db":true'; then
               curl -fsS "$URL/" | grep -q "MARIO" && echo "Deploy OK: $URL" && exit 0
             fi
-            echo "Chưa sẵn sàng, thử lại sau 5s..."; sleep 5
+            echo "Chưa sẵn sàng (lần $i/24), thử lại sau 10s..."; sleep 10
           done
           echo "::error::Smoke test thất bại"; exit 1
